@@ -1,4 +1,3 @@
-import React from 'react'
 import { useRecipeStore } from '../store/recipeStore'
 
 const RecipeList = () => {
@@ -6,16 +5,13 @@ const RecipeList = () => {
 
   return (
     <div>
-      {recipes.length === 0 ? (
-        <p>No recipes yet. Add one!</p>
-      ) : (
-        recipes.map((recipe) => (
-          <div key={recipe.id} style={{ border: '1px solid #ccc', padding: '8px', margin: '8px 0' }}>
-            <h3>{recipe.title}</h3>
-            <p>{recipe.description}</p>
-          </div>
-        ))
-      )}
+      {recipes.length === 0 && <p>No recipes yet.</p>}
+      {recipes.map((recipe) => (
+        <div key={recipe.id}>
+          <h3>{recipe.title}</h3>
+          <p>{recipe.description}</p>
+        </div>
+      ))}
     </div>
   )
 }

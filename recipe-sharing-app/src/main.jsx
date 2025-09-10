@@ -1,12 +1,15 @@
+import AddRecipeForm from './components/AddRecipeForm'
+import RecipeList from './components/RecipeList'
+import './App.css'
 
-import React from 'react'
-import ReactDOM from 'react-dom/client'
-import App from './App'
-import './index.css'
+function App() {
+  return (
+    <div className="App">
+      <h1>Recipe Sharing App</h1>
+      <AddRecipeForm />
+      <RecipeList />
+    </div>
+  )
+}
 
-
-ReactDOM.createRoot(document.getElementById('root')).render(
-<React.StrictMode>
-<App />
-</React.StrictMode>
-)
+export default App

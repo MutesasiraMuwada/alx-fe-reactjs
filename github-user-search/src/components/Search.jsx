@@ -1,76 +1,80 @@
 // src/components/Search.jsx
-import React, { useState } from "react";
-import axios from "axios";
+import { useState } from "react";
+import { searchUsers } from "../services/githubService";
 
-const Search = () => {
+function Search() {
   const [username, setUsername] = useState("");
+  const [location, setLocation] = useState(""); // 👈 Added state for location
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(false);
+  const [error, setError] = useState("");
 
   const handleSearch = async (e) => {
     e.preventDefault();
-    if (!username) return;
-
     setLoading(true);
-    setError(false);
+    setError("");
 
     try {
-      const response = await axios.get(`https://api.github.com/users/${username}`);
-      setUsers([response.data]); // wrap single user in array for mapping
+      const data = await searchUsers(username, location); // 👈 Pass location to service
+      setUsers(data.items || []);
     } catch (err) {
-      setUsers([]);
-      setError(true);
+      setError("Something went wrong while fetching users.");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="p-4 max-w-md mx-auto">
-      <form onSubmit={handleSearch} className="mb-4">
+    <div className="p-4">
+      <form onSubmit={handleSearch} className="space-y-4">
+        {/* Username input */}
         <input
           type="text"
-          placeholder="Enter GitHub username"
+          placeholder="Search GitHub username"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
-          className="border p-2 w-full rounded"
+          className="border p-2 rounded w-full"
         />
+
+        {/* Location input 👇 */}
+        <input
+          type="text"
+          placeholder="Filter by location"
+          value={location}
+          onChange={(e) => setLocation(e.target.value)}
+          className="border p-2 rounded w-full"
+        />
+
         <button
           type="submit"
-          className="mt-2 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+          className="bg-blue-600 text-white px-4 py-2 rounded"
         >
           Search
         </button>
       </form>
 
-      <div className="space-y-4">
-        {loading && <p>Loading...</p>}
-        {error && <p>Looks like we can’t find the user</p>}
+      {loading && <p className="mt-4">Loading...</p>}
+      {error && <p className="mt-4 text-red-600">{error}</p>}
+
+      <ul className="mt-6 space-y-2">
         {users.map((user) => (
-          <div key={user.id} className="border p-4 rounded flex items-center space-x-4">
-            <img
-              src={user.avatar_url}
-              alt={user.login}
-              className="w-16 h-16 rounded-full"
-            />
-            <div>
-              <p className="font-bold">{user.login}</p>
-              {user.name && <p>{user.name}</p>}
-              <a
-                href={user.html_url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-600 hover:underline"
-              >
-                View Profile
-              </a>
-            </div>
-          </div>
+          <li key={user.id} className="p-2 border rounded">
+            <a
+              href={user.html_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-medium text-blue-700"
+            >
+              {user.login}
+            </a>
+            {user.location && (
+              <p className="text-sm text-gray-600">📍 {user.location}</p>
+            )}
+          </li>
         ))}
-      </div>
+      </ul>
     </div>
   );
-};
+}
 
 export default Search;

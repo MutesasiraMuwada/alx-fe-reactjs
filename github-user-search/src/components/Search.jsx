@@ -4,24 +4,29 @@ import { searchUsers } from "../services/githubService";
 
 function Search() {
   const [username, setUsername] = useState("");
-  const [location, setLocation] = useState(""); // 👈 Added state for location
+  const [location, setLocation] = useState("");
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const handleSearch = async (e) => {
-    e.preventDefault();
+  // 👇 Required function for API request handling
+  const fetchUserData = async (username, location) => {
     setLoading(true);
     setError("");
 
     try {
-      const data = await searchUsers(username, location); // 👈 Pass location to service
+      const data = await searchUsers(username, location);
       setUsers(data.items || []);
     } catch (err) {
       setError("Something went wrong while fetching users.");
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    fetchUserData(username, location); // 👈 Use the new function
   };
 
   return (
@@ -36,7 +41,7 @@ function Search() {
           className="border p-2 rounded w-full"
         />
 
-        {/* Location input 👇 */}
+        {/* Location input */}
         <input
           type="text"
           placeholder="Filter by location"
